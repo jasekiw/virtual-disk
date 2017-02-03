@@ -11,11 +11,12 @@ import com.jasekiw.virtualdisk.console.Kernel;
 public class App 
 {
     private static Injector injector;
-    public static String version = "0.0.1";
+    public static String version = "0.0.2";
     public static void main( String[] args )
     {
         App.injector = Guice.createInjector();
-        System.out.print(App.getInjector()
+        System.out.print(
+                App.getInjector()
                 .getInstance(Kernel.class).handle(args)
         );
     }

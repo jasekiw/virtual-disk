@@ -14,7 +14,8 @@ public class Kernel
             FormatCommand.class,
             HelpCommand.class,
             FileTypeCommand.class,
-            DirectoryListingCommand.class
+            DirectoryListingCommand.class,
+            VersionCommand.class
     };
 
     /**
