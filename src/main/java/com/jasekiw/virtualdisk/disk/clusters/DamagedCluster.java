@@ -4,7 +4,12 @@ import com.jasekiw.virtualdisk.disk.Disk;
 
 public class DamagedCluster extends Cluster
 {
-    private ClusterType clusterType = ClusterType.damaged;
+    @Override
+    protected ClusterType clusterType()
+    {
+        return ClusterType.damaged;
+    }
+
     public DamagedCluster(byte[] cluster, Disk disk) {
         super(cluster, disk);
     }

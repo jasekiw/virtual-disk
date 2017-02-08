@@ -1,9 +1,14 @@
-package com.jasekiw.virtualdisk.disk;
+package com.jasekiw.virtualdisk.disk.reading;
 
 import com.jasekiw.virtualdisk.convertors.ByteToHex;
 import com.jasekiw.virtualdisk.convertors.HexToByte;
+import com.jasekiw.virtualdisk.disk.Disk;
+import com.jasekiw.virtualdisk.disk.clusters.Cluster;
+import com.jasekiw.virtualdisk.disk.clusters.ClusterType;
 import com.jasekiw.virtualdisk.disk.clusters.FileHeaderCluster;
 import com.jasekiw.virtualdisk.disk.clusters.RootCluster;
+import com.jasekiw.virtualdisk.disk.reading.usage.ClusterStatistics;
+import com.jasekiw.virtualdisk.disk.reading.usage.DiskUsageResult;
 
 import java.util.ArrayList;
 
@@ -11,11 +16,11 @@ public class DiskReader
 {
     protected HexToByte hexConvertor;
     protected ByteToHex byteConvertor;
-    DiskReader() {
+    public DiskReader() {
         hexConvertor = new HexToByte();
         byteConvertor = new ByteToHex();
     }
-    String outputDisk(Disk disk) {
+    public String outputDisk(Disk disk) {
         String output = "";
         for(byte i = 0; i < disk.clusterLength(); i++) {
             output += hexConvertor.getHexStringFromHexBytes(byteConvertor.byteTohexArray(i)) + ":";
@@ -32,7 +37,7 @@ public class DiskReader
         return output;
     }
 
-    String[] directoryListing(Disk disk) {
+    public String[] directoryListing(Disk disk) {
         RootCluster rootCluster = disk.getRootCluster();
         FileHeaderCluster currentFileHeader = rootCluster.getFileHeaderCluster();
         ArrayList<String> files = new ArrayList<>();
@@ -53,7 +58,7 @@ public class DiskReader
         return filesStringArray ;
     }
 
-    boolean fileExists(Disk disk, String filename) {
+    public boolean fileExists(Disk disk, String filename) {
        String[] files =  directoryListing(disk);
        boolean fileFound = false;
        int currentIndex = 0;
@@ -65,6 +70,14 @@ public class DiskReader
             currentIndex++;
        }
        return fileFound;
+    }
+
+    public DiskUsageResult getDiskUsage(Disk disk)
+    {
+        DiskUsageResult result = new DiskUsageResult();
+        for(int i =0; i < disk.clusterLength(); i++)
+            result.incrementClustersCount(disk.getCluster(i).getType());
+        return result;
     }
 
 }

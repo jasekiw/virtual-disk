@@ -1,5 +1,4 @@
-package com.jasekiw.virtualdisk.console.commands;
-
+package com.jasekiw.console;
 
 public abstract class Command
 {

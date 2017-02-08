@@ -1,5 +1,6 @@
 package com.jasekiw.virtualdisk.console.commands;
 
+import com.jasekiw.console.Command;
 import com.jasekiw.virtualdisk.disk.Disk;
 
 

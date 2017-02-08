@@ -5,7 +5,12 @@ import com.jasekiw.virtualdisk.disk.Disk;
 
 public class RootCluster extends Cluster
 {
-    protected ClusterType clusterType = ClusterType.root;
+    @Override
+    protected ClusterType clusterType()
+    {
+        return ClusterType.root;
+    }
+
     public RootCluster(byte[] cluster, Disk disk) {
         super(cluster, disk);
     }

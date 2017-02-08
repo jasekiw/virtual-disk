@@ -1,12 +1,18 @@
 package com.jasekiw.virtualdisk.actions;
 
+import com.google.inject.Inject;
 import com.jasekiw.virtualdisk.App;
 
 
 public class ApplicationActions
 {
+    protected App app;
+    @Inject()
+    ApplicationActions(App app) {
+        this.app = app;
+    }
     public String version() {
-        return "Virtual Hard Disk.  Version " + App.version + "\n";
+        return "Virtual Hard Disk.  Version " + app.getVersion() + "\n";
     }
 
     public String getUsage() {

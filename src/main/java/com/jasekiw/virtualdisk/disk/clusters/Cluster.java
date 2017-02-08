@@ -5,7 +5,7 @@ import com.jasekiw.virtualdisk.disk.Disk;
 
 public abstract class Cluster
 {
-    protected ClusterType clusterType;
+    protected abstract ClusterType clusterType();
     private byte[] cluster;
     protected Disk disk;
     protected HexToByte hexToByte;
@@ -16,7 +16,7 @@ public abstract class Cluster
     }
 
     public ClusterType getType() {
-       return clusterType;
+       return clusterType();
     }
 
     public byte getNibble(int index)

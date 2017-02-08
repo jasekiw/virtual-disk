@@ -7,7 +7,12 @@ import java.util.ArrayList;
 
 public class FileHeaderCluster extends Cluster
 {
-    protected ClusterType clusterType = ClusterType.fileHeader;
+    @Override
+    protected ClusterType clusterType()
+    {
+        return ClusterType.fileHeader;
+    }
+
     public FileHeaderCluster(byte[] cluster, Disk disk) {
         super(cluster, disk);
     }

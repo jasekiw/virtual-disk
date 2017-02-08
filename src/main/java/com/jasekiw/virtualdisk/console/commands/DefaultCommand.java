@@ -1,6 +1,7 @@
 package com.jasekiw.virtualdisk.console.commands;
 
 import com.google.inject.Inject;
+import com.jasekiw.console.Command;
 import com.jasekiw.virtualdisk.actions.ApplicationActions;
 
 

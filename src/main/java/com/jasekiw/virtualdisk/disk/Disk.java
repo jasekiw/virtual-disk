@@ -2,6 +2,8 @@ package com.jasekiw.virtualdisk.disk;
 
 import com.jasekiw.virtualdisk.disk.clusters.Cluster;
 import com.jasekiw.virtualdisk.disk.clusters.RootCluster;
+import com.jasekiw.virtualdisk.disk.reading.DiskReader;
+import com.jasekiw.virtualdisk.disk.reading.usage.DiskUsageResult;
 
 public class Disk
 {
@@ -40,6 +42,9 @@ public class Disk
     public boolean fileExists(String filename) {
         return reader.fileExists(this, filename);
     }
+
+    public DiskUsageResult getDiskUsage() { return reader.getDiskUsage(this); }
+
     @Override
     public String toString()
     {
