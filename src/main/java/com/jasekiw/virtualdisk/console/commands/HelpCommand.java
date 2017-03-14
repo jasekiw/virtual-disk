@@ -2,28 +2,34 @@ package com.jasekiw.virtualdisk.console.commands;
 
 
 import com.google.inject.Inject;
+import com.jasekiw.console.AppUsage;
 import com.jasekiw.console.Command;
-import com.jasekiw.virtualdisk.actions.ApplicationActions;
 
 public class HelpCommand extends Command
 {
 
-    private ApplicationActions actions;
+    private AppUsage usage;
 
     @Inject()
-    HelpCommand(ApplicationActions actions) {
-        this.actions = actions;
+    HelpCommand(AppUsage usage) {
+        this.usage = usage;
     }
 
     @Override
     public String run()
     {
-        return actions.getUsage();
+        return usage.getUsage();
     }
 
     @Override
     public String getSignature()
     {
         return "-?";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Get help.";
     }
 }

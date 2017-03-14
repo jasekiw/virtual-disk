@@ -1,13 +1,13 @@
 package com.jasekiw.virtualdisk;
 
+import com.jasekiw.console.App;
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
  * Unit test for simple App.
  */
-public class AppTest extends TestCase
+public class AppTest extends AppTestCase
 {
     /**
      * Create the test case
@@ -27,11 +27,10 @@ public class AppTest extends TestCase
         return new TestSuite( AppTest.class );
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
+
+    public void testSingleton()
     {
-        assertTrue( true );
+        com.jasekiw.console.App app1 = App.getInjector().getInstance(com.jasekiw.console.App.class);
+        assertTrue(app1.equals(app));
     }
 }

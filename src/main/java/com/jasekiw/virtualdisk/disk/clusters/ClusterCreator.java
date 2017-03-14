@@ -2,10 +2,6 @@ package com.jasekiw.virtualdisk.disk.clusters;
 
 import com.jasekiw.virtualdisk.disk.Disk;
 
-/**
- * @author Jason Gallavin
- * @created 2/2/2017.
- */
 public class ClusterCreator
 {
     public Cluster getCluster(byte[] cluster, Disk disk)

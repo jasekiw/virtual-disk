@@ -19,4 +19,10 @@ public class DirectoryListingCommand extends Command
     {
         return "-dir";
     }
+
+    @Override
+    public String getDescription()
+    {
+        return "List files on the disk.";
+    }
 }

@@ -1,9 +1,5 @@
 package com.jasekiw.virtualdisk.disk.reading.usage;
 
-/**
- * @author Jason Gallavin
- * @created 2/7/2017.
- */
 public class ClusterStatistics
 {
     private int count;

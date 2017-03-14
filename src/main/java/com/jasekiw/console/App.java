@@ -1,28 +1,32 @@
 package com.jasekiw.console;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.google.inject.*;
 import com.jasekiw.virtualdisk.console.Kernel;
-
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public abstract class App
 {
     private static Injector injector;
-    public abstract String getVersion();
-    protected abstract Class getKernel();
-
+    public static String getVersion() {
+        throw new NotImplementedException();
+    }
+    protected Kernel kernel;
     /**
      * Gets the application DI
      * @return the DI injector
      */
     public static Injector getInjector() {
-        return App.injector;
+        return injector;
     }
-    public App() {
-        App.injector = Guice.createInjector();
+
+    public static void setInjector(Injector injector) { App.injector = injector; }
+
+    @Inject
+    public App(Kernel kernel) {
+        this.kernel = kernel;
     }
 
     public void run(String[] args) {
-        System.out.print(((Kernel)App.getInjector().getInstance(getKernel())).handle(args));
+        System.out.print(this.kernel.handle(args));
     }
 }

@@ -1,12 +1,13 @@
 package com.jasekiw.console;
 
-import com.jasekiw.virtualdisk.App;
-import com.jasekiw.virtualdisk.console.commands.*;
+import com.google.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.Optional;
 
 public abstract class Kernel
 {
+    protected AppUsage appUsage;
     /**
      * Commands provided by your application.
      */
@@ -15,7 +16,7 @@ public abstract class Kernel
     /**
      * The command provided when no command is found
      */
-    protected abstract Class unkownCommand();
+    protected abstract Class unknownCommand();
 
     /**
      * The command provided for default functionality
@@ -25,17 +26,24 @@ public abstract class Kernel
 
     private ArrayList<Command> commandInstances = new ArrayList<>();
 
-    public Kernel()
+    public Kernel(AppUsage usage)
     {
         registerCommands();
+        appUsage = usage;
+        appUsage.setCommands(commandInstances);
     }
 
     public String handle(String[] args)
     {
         if (args.length == 0)
-            return ((Command) App.getInjector().getInstance(defaultCommand())).run();
+        {
+            if(defaultCommand() != null)
+                return ((Command) App.getInjector().getInstance(defaultCommand())).run();
+            return appUsage.getUsage();
+        }
+
         Optional<Command> command = commandInstances.stream()
-                .filter(c -> c.getSignature() != null && c.getSignature().equals(args[0]))
+                .filter(c -> c.getSimpleSignature() != null && c.getSignature().equals(args[0]))
                 .findFirst();
         if (command.isPresent()) {
             String[] options = new String[args.length - 1];
@@ -43,7 +51,7 @@ public abstract class Kernel
             command.get().setOptions(options);
             return command.get().run();
         } else
-            return ((Command) App.getInjector().getInstance(unkownCommand())).run();
+            return ((Command) App.getInjector().getInstance(unknownCommand())).run();
     }
 
     private void registerCommands()
@@ -51,5 +59,7 @@ public abstract class Kernel
         for (Class command : commands())
             commandInstances.add((Command) App.getInjector().getInstance(command));
     }
+
+
 
 }

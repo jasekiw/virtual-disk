@@ -39,4 +39,10 @@ public class DiskUsageCommand extends Command
     {
         return "-du";
     }
+
+    @Override
+    public String getDescription()
+    {
+        return "Gets the disk usage of the disk.";
+    }
 }

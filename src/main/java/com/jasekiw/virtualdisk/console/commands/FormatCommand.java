@@ -11,6 +11,12 @@ public class FormatCommand extends Command
     public String getSignature() { return "-format"; }
 
     @Override
+    public String getDescription()
+    {
+        return "formats the disk and displays the output.";
+    }
+
+    @Override
     public String run()
     {
         Disk disk = new Disk(Integer.parseInt(this.getOption(1)),Integer.parseInt(this.getOption(2)));

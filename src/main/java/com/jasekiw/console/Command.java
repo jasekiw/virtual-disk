@@ -9,10 +9,16 @@ public abstract class Command
         return options.length != 0;
     }
     protected String getOption(int index) {
-        return options[index];
+        if(options.length > index)
+            return options[index];
+        return null;
     }
     public void setOptions(String[] options) {
         this.options = options;
     }
     public abstract String getSignature();
+    public String getSimpleSignature() {
+        return this.getSignature().split(" +")[0];
+    }
+    public abstract String getDescription();
 }

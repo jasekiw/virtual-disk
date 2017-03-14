@@ -2,26 +2,32 @@ package com.jasekiw.virtualdisk.console.commands;
 
 
 import com.google.inject.Inject;
+import com.jasekiw.console.AppUsage;
 import com.jasekiw.console.Command;
-import com.jasekiw.virtualdisk.actions.ApplicationActions;
 
 public class VersionCommand extends Command
 {
-    private ApplicationActions actions;
+    private AppUsage usage;
 
     @Inject()
-    VersionCommand(ApplicationActions actions) {
-        this.actions = actions;
+    VersionCommand(AppUsage usage) {
+        this.usage = usage;
     }
     @Override
     public String run()
     {
-        return actions.version();
+        return usage.getAppHeader();
     }
 
     @Override
     public String getSignature()
     {
         return "-v";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Gets the application version.";
     }
 }

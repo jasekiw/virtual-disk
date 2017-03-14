@@ -1,31 +1,35 @@
 package com.jasekiw.virtualdisk;
 
+import com.google.inject.*;
 import com.jasekiw.virtualdisk.console.Kernel;
 
 /**
  * The main application entry point
  */
+@Singleton
 public class App extends com.jasekiw.console.App
 {
-    public static void main( String[] args ) { new App().run(args); }
-
     /**
-     * Gets the application version
-     * @return The application version
+     * Set the kernel to be used
+     * @param kernel
      */
-    @Override
-    public String getVersion()
+    @Inject
+    public App(Kernel kernel)
     {
-        return "0.0.2";
+        super(kernel);
+    }
+
+    public static void main(String[] args ) {
+        App.setInjector(Guice.createInjector(new AppModule()));
+        App.getInjector().getInstance(App.class).run(args);
     }
 
     /**
-     * The kernel to handle commands
-     * @return The kernel
+     * Gets the application header
+     * @return The application header
      */
-    @Override
-    protected Class getKernel()
+    public static String getVersion()
     {
-        return Kernel.class;
+        return "0.0.2";
     }
 }

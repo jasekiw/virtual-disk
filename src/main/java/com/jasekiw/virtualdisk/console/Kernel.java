@@ -1,9 +1,18 @@
 package com.jasekiw.virtualdisk.console;
 
+import com.google.inject.Inject;
+import com.jasekiw.console.AppUsage;
 import com.jasekiw.virtualdisk.console.commands.*;
 
 public class Kernel extends com.jasekiw.console.Kernel
 {
+    @Inject
+    public Kernel(AppUsage usage)
+    {
+        super(usage);
+        usage.setAppHeader("Virtual Hard Disk. Version " + com.jasekiw.virtualdisk.App.getVersion());
+    }
+
     /**
      * Commands provided by your application.
      */
@@ -24,7 +33,7 @@ public class Kernel extends com.jasekiw.console.Kernel
      * The command provided when no command is found
      */
     @Override
-    protected Class unkownCommand()
+    protected Class unknownCommand()
     {
         return UnknownCommand.class;
     }
