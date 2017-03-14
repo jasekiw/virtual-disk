@@ -30,6 +30,6 @@ public class App extends com.jasekiw.console.App
      */
     public static String getVersion()
     {
-        return "0.0.2";
+        return "0.0.3";
     }
 }
