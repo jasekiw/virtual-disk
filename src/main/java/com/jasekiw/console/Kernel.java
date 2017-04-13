@@ -38,20 +38,25 @@ public abstract class Kernel
         if (args.length == 0)
         {
             if(defaultCommand() != null)
-                return ((Command) App.getInjector().getInstance(defaultCommand())).run();
+            {
+                try { return ((Command) App.getInjector().getInstance(defaultCommand())).run(); }
+                catch (Exception e) { return e.getMessage(); }
+            }
             return appUsage.getUsage();
         }
 
         Optional<Command> command = commandInstances.stream()
-                .filter(c -> c.getSimpleSignature() != null && c.getSignature().equals(args[0]))
+                .filter(c -> c.getSimpleSignature() != null && c.getSimpleSignature().equals(args[0]))
                 .findFirst();
         if (command.isPresent()) {
             String[] options = new String[args.length - 1];
             System.arraycopy(args, 1, options, 0, args.length - 1);
             command.get().setOptions(options);
-            return command.get().run();
-        } else
-            return ((Command) App.getInjector().getInstance(unknownCommand())).run();
+            try { return command.get().run(); }
+            catch (Exception e) { return e.getMessage(); }
+        }
+        try { return ((Command) App.getInjector().getInstance(unknownCommand())).run(); }
+        catch (Exception e) { return e.getMessage(); }
     }
 
     private void registerCommands()

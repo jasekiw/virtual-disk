@@ -4,7 +4,7 @@ public abstract class Command
 {
     protected String signature;
     private String[] options;
-    public abstract String run();
+    public abstract String run() throws Exception;
     protected boolean hasOptions() {
         return options.length != 0;
     }

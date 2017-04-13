@@ -14,7 +14,9 @@ public class FileHeaderCluster extends Cluster
     }
 
     public FileHeaderCluster(byte[] cluster, Disk disk) {
+
         super(cluster, disk);
+        cluster[0] = 3;
     }
 
 
@@ -29,10 +31,81 @@ public class FileHeaderCluster extends Cluster
         return (FileHeaderCluster)cluster;
     }
 
+    public void setFileName(String filename) {
+        int currentByteIndex = 5;
+        char[] filenameArr = filename.toCharArray();
+        int currentFileNamePos = 0;
+        while(currentFileNamePos < filenameArr.length && currentByteIndex < size() - 1)
+        {
+            setByte(currentByteIndex, (byte)filenameArr[currentFileNamePos]);
+            currentFileNamePos++;
+            currentByteIndex += 2;
+        }
+        if(currentByteIndex < size() - 1)
+            setNibble(currentByteIndex, (byte)0);
+        else
+            setByte(size() - 2, new byte[] { (byte)0, (byte)0 });
+
+    }
+
+    public FileDataCluster[] setData(String data)
+    {
+        byte[] dataBytes;
+        try {
+            dataBytes = data.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return new FileDataCluster[0];
+        }
+        int currentByteIndex = 5;
+        while(getNibble(currentByteIndex) != 0 )
+            currentByteIndex++;
+        currentByteIndex++;
+        if(currentByteIndex >= size() - 1)
+            return makeFileDataClusters(dataBytes);
+        else
+        {
+            int currentFileDataPos = 0;
+            while(currentFileDataPos < dataBytes.length && currentByteIndex < size() - 1)
+            {
+                setByte(currentByteIndex, dataBytes[currentFileDataPos]);
+                currentFileDataPos++;
+                currentByteIndex += 2;
+            }
+            byte[] remainingBytes = new byte[dataBytes.length - currentFileDataPos];
+            System.arraycopy(dataBytes,currentFileDataPos, remainingBytes, 0, remainingBytes.length);
+            return makeFileDataClusters(remainingBytes);
+        }
+
+    }
+
+
+
+    protected FileDataCluster[] makeFileDataClusters(byte[] data)
+    {
+        int dataClusterMaxSize = (size() - 4);
+        int amountOfClustersToMake = data.length / dataClusterMaxSize;
+        FileDataCluster[] fileDataClusters = new FileDataCluster[amountOfClustersToMake];
+        int currentCluster = 0;
+        while(currentCluster < amountOfClustersToMake)
+        {
+            byte[] clusterBytes = new byte[dataClusterMaxSize];
+            System.arraycopy(data, currentCluster * amountOfClustersToMake, clusterBytes, 0, dataClusterMaxSize);
+            fileDataClusters[currentCluster] = makeFileDataCluster(clusterBytes);
+            currentCluster++;
+        }
+        return fileDataClusters;
+    }
+
+    protected FileDataCluster makeFileDataCluster(byte[] data) {
+        FileDataCluster cluster = new FileDataCluster(new byte[size()], disk);
+        cluster.setData(data);
+        return cluster;
+    }
+
     public String getFileName() {
         int currentByteIndex = 5;
         boolean nullFound = false;
-        ArrayList<Byte> fileNameBytes = new ArrayList<Byte>();
+        ArrayList<Byte> fileNameBytes = new ArrayList<>();
         while(!nullFound && currentByteIndex < this.size())
         {
             byte currentByte = 0;
@@ -41,9 +114,7 @@ public class FileHeaderCluster extends Cluster
                 currentByte = this.getByte(currentByteIndex);
             }
             catch(Exception e)
-            {
-                String test = "";
-            }
+            {}
 
             if(currentByte == 0)
                 nullFound = true;
