@@ -4,10 +4,7 @@ import com.jasekiw.virtualdisk.convertors.ByteToHex;
 import com.jasekiw.virtualdisk.convertors.HexToByte;
 import com.jasekiw.virtualdisk.disk.Disk;
 import com.jasekiw.virtualdisk.disk.DiskFile;
-import com.jasekiw.virtualdisk.disk.clusters.Cluster;
-import com.jasekiw.virtualdisk.disk.clusters.EmptyCluster;
-import com.jasekiw.virtualdisk.disk.clusters.FileHeaderCluster;
-import com.jasekiw.virtualdisk.disk.clusters.RootCluster;
+import com.jasekiw.virtualdisk.disk.clusters.*;
 import com.jasekiw.virtualdisk.disk.exceptions.DiskFileNotFound;
 import com.jasekiw.virtualdisk.disk.reading.usage.DiskUsageResult;
 
@@ -111,13 +108,37 @@ public class DiskReader
     public DiskFile readFile(String filename) throws DiskFileNotFound
     {
        FileHeaderCluster cluster = disk.getRootCluster().getFileHeaderCluster();
-        String aFileName = cluster.getFileName();
        while(cluster != null && !cluster.getFileName().equals(filename))
            cluster = cluster.getNextFileHeaderCluster();
         if(cluster == null)
             throw new DiskFileNotFound(filename);
         return readFile(cluster);
     }
+
+    /**
+     * Gets the ammount of clusters that a file holds
+     * @param filename
+     * @return
+     * @throws DiskFileNotFound
+     */
+    public int getFileSize(String filename) throws DiskFileNotFound
+    {
+        FileHeaderCluster headerCluster = disk.getRootCluster().getFileHeaderCluster();
+        while(headerCluster != null && !headerCluster.getFileName().equals(filename))
+            headerCluster = headerCluster.getNextFileHeaderCluster();
+
+        if(headerCluster == null)
+            throw new DiskFileNotFound(filename);
+        int clustersUsed = 1;
+        FileDataCluster dataCluster = headerCluster.getNextFileDataCluster();
+        while(dataCluster != null)
+        {
+            clustersUsed++;
+            dataCluster = dataCluster.getNextFileDataCluster();
+        }
+        return clustersUsed;
+    }
+
 
 
 }

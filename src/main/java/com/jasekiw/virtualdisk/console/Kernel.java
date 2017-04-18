@@ -26,7 +26,8 @@ public class Kernel extends com.jasekiw.console.Kernel
                 DirectoryListingCommand.class,
                 VersionCommand.class,
                 DiskUsageCommand.class,
-                AddFileCommand.class
+                AddFileCommand.class,
+                FileSizeCommand.class
         };
     }
 
