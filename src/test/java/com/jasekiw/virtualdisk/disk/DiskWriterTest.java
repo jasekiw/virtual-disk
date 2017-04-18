@@ -41,8 +41,6 @@ public class DiskWriterTest extends AppTestCase
             fail();
         }
         try {
-            byte[] outputData = disk.reader.readFile(filename).data;
-//            assertEquals(dataBytes, outputData);
             String output = new String(disk.reader.readFile(filename).data);
             assertEquals(data, output);
         } catch (DiskFileNotFound diskFileNotFound) {
