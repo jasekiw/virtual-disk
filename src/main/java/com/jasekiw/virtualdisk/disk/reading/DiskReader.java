@@ -3,10 +3,12 @@ package com.jasekiw.virtualdisk.disk.reading;
 import com.jasekiw.virtualdisk.convertors.ByteToHex;
 import com.jasekiw.virtualdisk.convertors.HexToByte;
 import com.jasekiw.virtualdisk.disk.Disk;
+import com.jasekiw.virtualdisk.disk.DiskFile;
 import com.jasekiw.virtualdisk.disk.clusters.Cluster;
 import com.jasekiw.virtualdisk.disk.clusters.EmptyCluster;
 import com.jasekiw.virtualdisk.disk.clusters.FileHeaderCluster;
 import com.jasekiw.virtualdisk.disk.clusters.RootCluster;
+import com.jasekiw.virtualdisk.disk.exceptions.DiskFileNotFound;
 import com.jasekiw.virtualdisk.disk.reading.usage.DiskUsageResult;
 
 import java.util.ArrayList;
@@ -37,7 +39,7 @@ public class DiskReader
             if(x + 1 >= cluster.size())
                 output += hexConvertor.getHexStringFromHexBytes(cluster.getNibble(x));
             else
-                output += hexConvertor.getHexStringFromHexBytes(cluster.getNibbleByteArray(x));
+                output += hexConvertor.getHexStringFromHexBytes(cluster.getNibbleArray(x));
         }
         return output +  "\n";
     }
@@ -96,6 +98,25 @@ public class DiskReader
             cluster = cluster.getNextEmptyCluster();
         }
         return amount;
+    }
+
+    public DiskFile readFile(FileHeaderCluster cluster)
+    {
+        DiskFile file = new DiskFile();
+        file.filename = cluster.getFileName();
+        file.data = cluster.getData();
+        return file;
+    }
+
+    public DiskFile readFile(String filename) throws DiskFileNotFound
+    {
+       FileHeaderCluster cluster = disk.getRootCluster().getFileHeaderCluster();
+        String aFileName = cluster.getFileName();
+       while(cluster != null && !cluster.getFileName().equals(filename))
+           cluster = cluster.getNextFileHeaderCluster();
+        if(cluster == null)
+            throw new DiskFileNotFound(filename);
+        return readFile(cluster);
     }
 
 

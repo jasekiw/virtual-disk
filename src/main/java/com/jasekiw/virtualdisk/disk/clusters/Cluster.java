@@ -33,13 +33,13 @@ public abstract class Cluster
     {
         return cluster[index];
     }
-    public byte[] getNibbleByteArray(int index)
+    public byte[] getNibbleArray(int index)
     {
         return new byte[] { cluster[index], cluster[index + 1]};
     }
 
     public byte getByte(int index) {
-        return hexToByte.getDecimalByteFromHexBytes(getNibbleByteArray(index));
+        return hexToByte.getDecimalByteFromHexNibbles(getNibbleArray(index));
     }
 
 

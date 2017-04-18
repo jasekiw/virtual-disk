@@ -49,7 +49,7 @@ public class HexToByte
      * @param bytes
      * @return
      */
-    public byte getDecimalByteFromHexBytes(byte[] bytes) {
+    public byte getDecimalByteFromHexNibbles(byte[] bytes) {
         byte firstByte = bytes[0];
         byte secondByte = bytes[1];
         return (byte) ((firstByte * 16) + secondByte);

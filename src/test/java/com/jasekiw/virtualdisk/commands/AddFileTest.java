@@ -1,5 +1,6 @@
 package com.jasekiw.virtualdisk.commands;
 
+import com.jasekiw.console.exceptions.ConsoleException;
 import com.jasekiw.virtualdisk.AppTestCase;
 import com.jasekiw.virtualdisk.console.commands.AddFileCommand;
 
@@ -23,11 +24,12 @@ public class AddFileTest extends AppTestCase
         String result = null;
         try {
             result = command.run();
-        } catch (Exception e) {
+        } catch (ConsoleException e) {
             fail();
         }
         assertNotNull(result);
         System.out.println(result);
     }
+
 
 }

@@ -3,6 +3,7 @@ package com.jasekiw.virtualdisk.console.commands;
 import com.jasekiw.console.Command;
 import com.jasekiw.console.exceptions.ConsoleException;
 import com.jasekiw.virtualdisk.disk.Disk;
+import com.jasekiw.virtualdisk.disk.clusters.FileDataCluster;
 import com.jasekiw.virtualdisk.disk.exceptions.IncorrectClusterSizeException;
 import com.jasekiw.virtualdisk.disk.writing.exceptions.InsufficientDiskSpace;
 
@@ -26,9 +27,13 @@ public class AddFileCommand extends Command
         System.out.println("Formatted Disk:");
         System.out.println(disk.toString());
         try {
-            disk.getWriter().writeFile(file.getName(), data);
+            byte[] dataBytes = data.getBytes("UTF-8");
+            disk.getWriter().writeFile(file.getName(), dataBytes);
         } catch (InsufficientDiskSpace insufficientDiskSpace) {
             throw new ConsoleException("There is not enough disk space for that file");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new ConsoleException("The file contents does not adhere to UTF-8 encoding");
         }
         System.out.println("Writing file to disk:");
         return disk.toString();
