@@ -20,5 +20,20 @@ public class RootCluster extends Cluster
         return (FileHeaderCluster) disk.getCluster(index);
     }
 
+    public EmptyCluster getEmptyCluster() {
+        int index = (int)this.getByte(1);
+        Cluster cluster = disk.getCluster(index);
+        if(cluster == null)
+            return null;
+        return (EmptyCluster)cluster;
+    }
+
+    public void setEmptyCluster(EmptyCluster cluster) {
+        if(cluster == null)
+            setByte(1, 0);
+        else
+            setByte(1, cluster.address);
+    }
+
 
 }

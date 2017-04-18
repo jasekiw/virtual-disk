@@ -1,29 +1,35 @@
 package com.jasekiw.virtualdisk.console.commands;
 
 import com.jasekiw.console.Command;
+import com.jasekiw.console.exceptions.ConsoleException;
 import com.jasekiw.virtualdisk.disk.Disk;
+import com.jasekiw.virtualdisk.disk.exceptions.IncorrectClusterSizeException;
+import com.jasekiw.virtualdisk.disk.writing.exceptions.InsufficientDiskSpace;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class AddFileCommand extends Command
 {
     @Override
-    public String run() throws Exception
+    public String run() throws ConsoleException
     {
         if(this.getOption(0) == null)
             return "<filename> must be given";
         File file = new File(this.getOption(0));
         if(!file.exists() && !file.isDirectory())
-            throw new FileNotFoundException("The given file does not exist");
-        Disk disk = new Disk(32,64);
+            throw new ConsoleException("The given file does not exist");
+        Disk disk = null;
+        try {  disk = new Disk(32,64); } catch (IncorrectClusterSizeException e) {}
         disk.formatDisk("VirtualDisk");
         String data = readFile(file.getAbsolutePath());
         if(data == null)  return null;
         System.out.println("Formatted Disk:");
         System.out.println(disk.toString());
-        disk.writeFile(file.getName(), data);
+        try {
+            disk.getWriter().writeFile(file.getName(), data);
+        } catch (InsufficientDiskSpace insufficientDiskSpace) {
+            throw new ConsoleException("There is not enough disk space for that file");
+        }
         System.out.println("Writing file to disk:");
         return disk.toString();
     }

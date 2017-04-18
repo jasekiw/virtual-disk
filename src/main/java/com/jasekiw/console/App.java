@@ -7,9 +7,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public abstract class App
 {
     private static Injector injector;
-    public static String getVersion() {
-        throw new NotImplementedException();
-    }
+
     protected Kernel kernel;
     /**
      * Gets the application DI

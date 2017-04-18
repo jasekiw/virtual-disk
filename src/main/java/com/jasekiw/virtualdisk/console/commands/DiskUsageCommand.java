@@ -1,25 +1,27 @@
 package com.jasekiw.virtualdisk.console.commands;
 
 import com.jasekiw.console.Command;
+import com.jasekiw.console.exceptions.ConsoleException;
+import com.jasekiw.console.exceptions.ParameterException;
 import com.jasekiw.virtualdisk.disk.Disk;
 import com.jasekiw.virtualdisk.disk.DiskCreator;
 import com.jasekiw.virtualdisk.disk.clusters.ClusterType;
+import com.jasekiw.virtualdisk.disk.exceptions.IncorrectClusterSizeException;
 import com.jasekiw.virtualdisk.disk.reading.usage.DiskUsageResult;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class DiskUsageCommand extends Command
 {
     @Override
-    public String run()
+    public String run() throws ConsoleException
     {
         DiskCreator diskCreator = new DiskCreator();
-        Disk disk = diskCreator.createDiskFromFile("disk.txt");
-        DiskUsageResult result = disk.getDiskUsage();
+        Disk disk = null;
+        try {
+            disk = diskCreator.createDiskFromFile("disk.txt");
+        } catch (IncorrectClusterSizeException e) {
+            throw new ParameterException("The cluster size is incorrect. It must be divisible by 2");
+        }
+        DiskUsageResult result = disk.getReader().getDiskUsage();
 
         String output = "Disk Usage::\n";
         output += "State Count Percent\n";

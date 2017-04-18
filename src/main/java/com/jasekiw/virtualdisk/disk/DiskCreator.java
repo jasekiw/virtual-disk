@@ -2,6 +2,7 @@ package com.jasekiw.virtualdisk.disk;
 
 import com.jasekiw.virtualdisk.convertors.HexToByte;
 import com.jasekiw.virtualdisk.disk.clusters.ClusterCreator;
+import com.jasekiw.virtualdisk.disk.exceptions.IncorrectClusterSizeException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,7 +14,8 @@ public class DiskCreator
     public DiskCreator() {
         hexToByte = new HexToByte();
     }
-    public Disk createDiskFromString(String hd) {
+    public Disk createDiskFromString(String hd) throws IncorrectClusterSizeException
+    {
         String lines[] = hd.split("\\r?\\n");
         ClusterCreator creator = new ClusterCreator();
         Disk disk = new Disk(lines.length, lines[0].length());
@@ -25,7 +27,7 @@ public class DiskCreator
         return disk;
     }
 
-    public Disk createDiskFromFile(String filename)
+    public Disk createDiskFromFile(String filename) throws IncorrectClusterSizeException
     {
         try {
             FileReader freader = new FileReader(filename);

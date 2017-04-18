@@ -4,10 +4,9 @@ import com.jasekiw.virtualdisk.convertors.ByteToHex;
 import com.jasekiw.virtualdisk.convertors.HexToByte;
 import com.jasekiw.virtualdisk.disk.Disk;
 import com.jasekiw.virtualdisk.disk.clusters.Cluster;
-import com.jasekiw.virtualdisk.disk.clusters.ClusterType;
+import com.jasekiw.virtualdisk.disk.clusters.EmptyCluster;
 import com.jasekiw.virtualdisk.disk.clusters.FileHeaderCluster;
 import com.jasekiw.virtualdisk.disk.clusters.RootCluster;
-import com.jasekiw.virtualdisk.disk.reading.usage.ClusterStatistics;
 import com.jasekiw.virtualdisk.disk.reading.usage.DiskUsageResult;
 
 import java.util.ArrayList;
@@ -16,28 +15,34 @@ public class DiskReader
 {
     protected HexToByte hexConvertor;
     protected ByteToHex byteConvertor;
-    public DiskReader() {
+    protected Disk disk;
+    public DiskReader(Disk disk) {
+        this.disk = disk;
         hexConvertor = new HexToByte();
         byteConvertor = new ByteToHex();
     }
-    public String outputDisk(Disk disk) {
+    public String outputDisk() {
         String output = "";
-        for(byte i = 0; i < disk.clusterLength(); i++) {
-            output += hexConvertor.getHexStringFromHexBytes(byteConvertor.byteTohexArray(i)) + ":";
-            output += hexConvertor.getHexStringFromHexBytes(disk.getCluster(i).getNibble(0));
-            for(int x =1; x < disk.getCluster(i).size(); x+= 2)
-            {
-                if(x + 1 >= disk.getCluster(i).size())
-                    output += hexConvertor.getHexStringFromHexBytes(disk.getCluster(i).getNibble(x));
-                else
-                    output += hexConvertor.getHexStringFromHexBytes(disk.getCluster(i).getNibbleByteArray(x));
-            }
-            output += "\n";
-        }
+        for(byte i = 0; i < disk.clusterLength(); i++)
+            output += outputCluster(i == 0 ? disk.getRootCluster() : disk.getCluster(i));
         return output;
     }
 
-    public String[] directoryListing(Disk disk) {
+    protected String outputCluster(Cluster cluster) {
+        String output = "";
+        output += hexConvertor.getHexStringFromHexBytes(byteConvertor.byteToHexArray(cluster.getAddress())) + ":";
+        output += hexConvertor.getHexStringFromHexBytes(cluster.getNibble(0));
+        for(int x =1; x < cluster.size(); x+= 2)
+        {
+            if(x + 1 >= cluster.size())
+                output += hexConvertor.getHexStringFromHexBytes(cluster.getNibble(x));
+            else
+                output += hexConvertor.getHexStringFromHexBytes(cluster.getNibbleByteArray(x));
+        }
+        return output +  "\n";
+    }
+
+    public String[] directoryListing() {
         RootCluster rootCluster = disk.getRootCluster();
         FileHeaderCluster currentFileHeader = rootCluster.getFileHeaderCluster();
         ArrayList<String> files = new ArrayList<>();
@@ -58,8 +63,8 @@ public class DiskReader
         return filesStringArray ;
     }
 
-    public boolean fileExists(Disk disk, String filename) {
-       String[] files =  directoryListing(disk);
+    public boolean fileExists(String filename) {
+       String[] files =  directoryListing();
        boolean fileFound = false;
        int currentIndex = 0;
        while(!fileFound && currentIndex < files.length)
@@ -72,12 +77,25 @@ public class DiskReader
        return fileFound;
     }
 
-    public DiskUsageResult getDiskUsage(Disk disk)
+    public DiskUsageResult getDiskUsage()
     {
         DiskUsageResult result = new DiskUsageResult();
         for(int i =0; i < disk.clusterLength(); i++)
             result.incrementClustersCount(disk.getCluster(i).getType());
         return result;
+    }
+
+    public int getEmptyClusters() {
+        EmptyCluster cluster = disk.getRootCluster().getEmptyCluster();
+        int amount = 0;
+        if(cluster == null)
+            return 0;
+        while(cluster != null)
+        {
+            amount++;
+            cluster = cluster.getNextEmptyCluster();
+        }
+        return amount;
     }
 
 

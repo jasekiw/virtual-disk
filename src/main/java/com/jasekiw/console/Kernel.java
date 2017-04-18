@@ -1,6 +1,6 @@
 package com.jasekiw.console;
 
-import com.google.inject.Inject;
+import com.jasekiw.console.exceptions.ConsoleException;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -38,10 +38,7 @@ public abstract class Kernel
         if (args.length == 0)
         {
             if(defaultCommand() != null)
-            {
-                try { return ((Command) App.getInjector().getInstance(defaultCommand())).run(); }
-                catch (Exception e) { return e.getMessage(); }
-            }
+                return executeCommand(defaultCommand());
             return appUsage.getUsage();
         }
 
@@ -51,13 +48,24 @@ public abstract class Kernel
         if (command.isPresent()) {
             String[] options = new String[args.length - 1];
             System.arraycopy(args, 1, options, 0, args.length - 1);
-            command.get().setOptions(options);
-            try { return command.get().run(); }
-            catch (Exception e) { return e.getMessage(); }
+            return executeCommand(command.get(), options);
         }
-        try { return ((Command) App.getInjector().getInstance(unknownCommand())).run(); }
-        catch (Exception e) { return e.getMessage(); }
+        return executeCommand(unknownCommand());
     }
+
+    private String executeCommand(Class command) {
+        try { return ((Command) App.getInjector().getInstance(command)).run(); }
+        catch (ConsoleException e) { return e.getMessage(); }
+    }
+
+    private String executeCommand(Command command, String[] options) {
+        try {
+            command.setOptions(options);
+            return command.run();
+        }
+        catch (ConsoleException e) { return e.getMessage(); }
+    }
+
 
     private void registerCommands()
     {

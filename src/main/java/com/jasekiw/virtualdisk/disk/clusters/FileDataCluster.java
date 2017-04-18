@@ -26,4 +26,9 @@ public class FileDataCluster extends Cluster
             currentNibbleIndex += 2;
         }
     }
+
+    public static int getUsableSpaceBytes(int usableNibbles)
+    {
+        return (usableNibbles / 2)  - 3;
+    }
 }

@@ -2,8 +2,8 @@ package com.jasekiw.virtualdisk.disk;
 
 import com.jasekiw.virtualdisk.disk.clusters.Cluster;
 import com.jasekiw.virtualdisk.disk.clusters.RootCluster;
+import com.jasekiw.virtualdisk.disk.exceptions.IncorrectClusterSizeException;
 import com.jasekiw.virtualdisk.disk.reading.DiskReader;
-import com.jasekiw.virtualdisk.disk.reading.usage.DiskUsageResult;
 import com.jasekiw.virtualdisk.disk.writing.DiskWriter;
 
 import java.lang.reflect.Constructor;
@@ -17,12 +17,15 @@ public class Disk
     protected DiskReader reader;
     protected DiskWriter writer;
 
-    public Disk(int clusters, int nibbles) {
+    public Disk(int clusters, int nibbles) throws IncorrectClusterSizeException
+    {
+        if(nibbles % 2 > 0)
+            throw new IncorrectClusterSizeException();
         this.nibbleSize = nibbles;
         disk = new Cluster[clusters];
         formatter = new DiskFormatter();
-        reader = new DiskReader();
-        writer = new DiskWriter();
+        reader = new DiskReader(this);
+        writer = new DiskWriter(this);
     }
 
     public void formatDisk(String volumeName) {
@@ -32,45 +35,35 @@ public class Disk
 
     public Cluster getCluster(int index)
     {
+        if(index >= disk.length)
+            return null;
+        if(index == 0)
+            return null;
         return disk[index];
     }
 
-    public Cluster convertCluster(int index, Class type)
-    {
-        Cluster cluster = getCluster(index);
-        try {
-            Constructor constructor = type.getConstructor(byte[].class, Disk.class);
-            Cluster newCluster = (Cluster)constructor.newInstance(cluster.getBytes(), this);
-            setCluster(index,newCluster);
-            return newCluster;
-        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            return null;
-        }
-
-    }
     public RootCluster getRootCluster() { return (RootCluster) disk[0]; }
 
-    public void setCluster(int index, Cluster cluster) {disk[index] = cluster; }
+    public void setCluster(int index, Cluster cluster) {
+        disk[index] = cluster;
+        cluster.setAddress(index);
+    }
     public int clusterLength() {
         return disk.length;
     }
     public int getClusterNibbleSize() {  return nibbleSize; }
 
-    public String[] directoryListing() {
-        return reader.directoryListing(this);
-    }
-    public boolean fileExists(String filename) {
-        return reader.fileExists(this, filename);
+    public DiskReader getReader() {
+        return this.reader;
     }
 
-    public DiskUsageResult getDiskUsage() { return reader.getDiskUsage(this); }
-
-    public void writeFile(String filename, String data) {
-        this.writer.writeFile(this, filename, data);
+    public DiskWriter getWriter() {
+        return this.writer;
     }
+
     @Override
     public String toString()
     {
-        return reader.outputDisk(this);
+        return reader.outputDisk();
     }
 }

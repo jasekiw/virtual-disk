@@ -14,11 +14,13 @@ public class FileHeaderCluster extends Cluster
     }
 
     public FileHeaderCluster(byte[] cluster, Disk disk) {
-
         super(cluster, disk);
-        cluster[0] = 3;
+        this.setNibble(0, 3);
     }
-
+    public FileHeaderCluster(Disk disk) {
+        super(disk);
+        this.setNibble(0, 3);
+    }
 
     public FileHeaderCluster getNextFileHeaderCluster() {
         int index = (int)this.getByte(1);
@@ -27,7 +29,7 @@ public class FileHeaderCluster extends Cluster
             cluster = disk.getCluster(index);
         if(cluster == null)
             return null;
-        else
+
         return (FileHeaderCluster)cluster;
     }
 
@@ -42,9 +44,9 @@ public class FileHeaderCluster extends Cluster
             currentByteIndex += 2;
         }
         if(currentByteIndex < size() - 1)
-            setNibble(currentByteIndex, (byte)0);
+            setNibble(currentByteIndex, 0);
         else
-            setByte(size() - 2, new byte[] { (byte)0, (byte)0 });
+            setByte(size() - 2, 0);
 
     }
 
