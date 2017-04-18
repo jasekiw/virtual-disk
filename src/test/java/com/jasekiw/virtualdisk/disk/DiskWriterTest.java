@@ -22,9 +22,35 @@ public class DiskWriterTest extends AppTestCase
         super(testName);
     }
 
-    public void test_writeFile() {
+    public void test_writeFile_multiCluster() {
 
         String data = "hello world!\nThe quick brown fox jumped over the lazy dog.\nThe quick brown dog jumped over the lazy fox";
+        byte[] dataBytes = new byte[0];
+        try {
+            dataBytes = data.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            fail();
+        }
+        String filename = "someFile.txt";
+        Disk disk = null;
+        try {  disk = new Disk(32,64); } catch (IncorrectClusterSizeException e) {}
+        disk.formatDisk("VirtualDisk");
+        try {
+            disk.getWriter().writeFile(filename, dataBytes);
+        } catch (InsufficientDiskSpace  e) {
+            fail();
+        }
+        try {
+            String output = new String(disk.reader.readFile(filename).data);
+            assertEquals(data, output);
+        } catch (DiskFileNotFound diskFileNotFound) {
+            fail("File was not found.");
+        }
+    }
+
+    public void test_writeFile_singleCluster() {
+
+        String data = "hello";
         byte[] dataBytes = new byte[0];
         try {
             dataBytes = data.getBytes("UTF-8");

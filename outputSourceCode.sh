@@ -1,0 +1,1 @@
+find src -type f -name '*.java' -exec cat {} + >> sourceCode.txt
